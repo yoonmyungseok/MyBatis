@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace: 해당 mapper 파일의 고유한 별칭, 식별자-->
+<mapper namespace="memberMapper">
+    <!--
+        [표현법]
+        *   INSERT, UPDATE, DELET문일 경우
+        <insert id="각sql문의 식별자" parameterType="전달받을자바타입(풀클래스명) 혹은 별칭">
+            실행할 쿼리문
+        </insert>
+        <update></update>
+        <delete></delete>
+
+        =>parameterType:   매꿀값의 타입이기 때문에 
+                            만약 완성된 쿼리문이 실행될 예정이라면 생략 가능한 속성이다
+        =>update, delete 태그도 마찬가지
+        =>이경우에는 쿼리문의 실행 결과가 처리된 행의 갯수로 나옴(int)
+        =>그동안 쿼리문을 ?(위치홀더)로 표현했다면 #{필드명 또는 변수명 또는 해시맵일경우는키값}으로 표현한다
+
+        *   SELECT 문일 경우
+        <select id="각sql문들의식별자" parameterType="전달받을자바타입(풀클래스명) 혹은 별칭" 
+                resultType="조회결과를 반환하고자하는 자바타입" 또는 resultMap="조회결과를 뽑아서 매핑할 resultMap의 id속성값">
+        </select>
+        =>반드시 resultType 또는 resultMap 속성을 작성해야 한다
+    -->
+    <!--
+        *   resultMap:  마이바티스의 핵심 기능 중 하나
+                        ResultSet으로 부터 조회된 각 컬럼값을 하나씩 뽑아서
+                        내가 지정한 VO 객체의 각 필드에 값을 담는(매핑)
+                        JDBC 코드를 줄여주는 역할을 해주는 설정
+        [표현법]
+        <resultMap id="식별자" type="조회된결과를담아서반환하고자하는VO객체의타입(풀클래스명) 또는 별칭">
+            <result column="조회결과를뽑고자하는DB컬럼명" property="해당결과를담고자하는필드명" />
+            <result column="조회결과를뽑고자하는DB컬럼명" property="해당결과를담고자하는필드명" />
+            <result column="조회결과를뽑고자하는DB컬럼명" property="해당결과를담고자하는필드명" />
+        </resultMap>
+    -->
+    <resultMap id="memberResultSet" type="member">
+        <result column="USER_NO" property="userNo" />
+        <result column="USER_ID" property="userId" />
+        <result column="USER_PWD" property="userPwd" />
+        <result column="USER_NAME" property="userName" />
+        <result column="EMAIL" property="email" />
+        <result column="BIRTHDAY" property="birthday" />
+        <result column="GENDER" property="gender" />
+        <result column="PHONE" property="phone" />
+        <result column="ADDRESS" property="address" />
+        <result column="ENROLL_DATE" property="enrollDate" />
+        <result column="MODIFY_DATE" property="modifyDate" />
+        <result column="STATUS" property="status" />
+    </resultMap>
+    <select id="loginMember" parameterType="member" resultMap="memberResultSet">
+        SELECT * FROM MEMBER WHERE USER_ID=#{userId} AND USER_PWD=#{userPwd} AND STATUS='Y'
+    </select>
+    <insert id="insertMember" parameterType="member">
+        INSERT INTO MEMBER (USER_NO, USER_ID, USER_PWD, USER_NAME,EMAIL,BIRTHDAY,GENDER,PHONE,ADDRESS) 
+        VALUES(SEQ_UNO.NEXTVAL, #{userId}, #{userPwd}, #{userName}, #{email}, #{birthday}, #{gender}, #{phone}, #{address})
+    </insert>
+    
+</mapper>

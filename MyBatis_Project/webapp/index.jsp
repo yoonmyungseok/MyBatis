@@ -37,5 +37,12 @@
                     ex)Log4j, JUnit
     -->
     여기는 index.jsp야
+
+    <!--
+        스프링에서는 views 폴더가 WEB-INF 폴더 안에 자동으로 들어가있음
+        그런데 WEB-INF 폴더는 url 주소로 직접 접근이 불가능한 폴더임
+        =>index.jsp를 띄워주되 (localhost:8888/mybatis) 화면은 main.jsp를 보여줄 수 있도록 "포워딩"으로 지정해줄 예정
+    -->
+    <jsp:forward page="WEB-INF/views/main.jsp"/>
 </body>
 </html>
