@@ -1,4 +1,4 @@
-package com.kh.mybatis.member.model.service;
+package com.kh.mybatis.member.model.dao;
 
 import org.apache.ibatis.session.SqlSession;
 

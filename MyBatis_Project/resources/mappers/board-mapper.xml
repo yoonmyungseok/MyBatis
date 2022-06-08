@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardMapper">
+    <resultMap id="boardResultSet" type="board">
+        <result column="BOARD_NO" property="boardNo" /> 
+        <result column="BOARD_TITLE" property="boardTitle" />
+        <result column="USER_ID" property="boardWriter" />
+        <result column="COUNT" property="count" />
+        <result column="CREATE_DATE" property="createDate" />
+        <result column="BOARD_CONTENT" property="boardContent" />
+    </resultMap>
+    <resultMap id="replyResultSet" type="reply">
+        <result column="REPLY_NO" property="replyNo" />
+        <result column="USER_ID" property="replyWriter" />
+        <result column="REPLY_CONTENT" property="replyContent" />
+        <result column="CREATE_DATE" property="createDate" />
+    </resultMap>
+
+    <select id="selectListCount" resultType="_int">
+        SELECT COUNT(*) FROM BOARD WHERE STATUS='Y'
+    </select>
+    <!--
+        BOARD_CONTENT 컬럼을 조회하지 않았지만 해당 resultMap에 BOARD_CONTENT 컬럼에 대한 매핑 항목이 존재
+        =>없어도 매핑 안하고 말지 오류를 발생시키지는 않음
+    -->
+    <select id="selectList" resultMap="boardResultSet">
+        SELECT BOARD_NO, BOARD_TITLE, USER_ID, COUNT, CREATE_DATE
+        FROM BOARD B
+        JOIN MEMBER ON (BOARD_WRITER=USER_NO)
+        WHERE B.STATUS='Y'
+        ORDER BY CREATE_DATE DESC
+    </select>
+    <!--insert, update, delete 구문의 경우 어차피 처리된 행의 갯수가 int형으로 나오기 때문에 resultType을 적지 않는다-->
+    <update id="increaseCount" parameterType="_int">
+        UPDATE BOARD
+        SET COUNT=COUNT+1
+        WHERE BOARD_NO=#{boardNo}
+        AND STATUS='Y'
+    </update>
+    <select id="selectBoard" parameterType="_int" resultMap="boardResultSet">
+        SELECT BOARD_NO, BOARD_TITLE, USER_ID, COUNT, CREATE_DATE, BOARD_CONTENT
+        FROM BOARD B
+        JOIN MEMBER ON (BOARD_WRITER=USER_NO)
+        WHERE B.STATUS='Y'
+        AND BOARD_NO=#{boardNo}
+    </select>
+
+    <select id="selectReplyList" parameterType="_int" resultMap="replyResultSet">
+        SELECT REPLY_NO, USER_ID, REPLY_CONTENT, CREATE_DATE
+        FROM REPLY R
+        JOIN MEMBER ON (REPLY_WRITER=USER_NO)
+        WHERE R.STATUS='Y'
+        AND REF_BNO=${boardNo}
+        ORDER BY CREATE_DATE DESC
+    </select>
+</mapper>
