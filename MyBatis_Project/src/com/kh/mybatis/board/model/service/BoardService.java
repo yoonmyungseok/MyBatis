@@ -1,6 +1,7 @@
 package com.kh.mybatis.board.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.kh.mybatis.board.model.vo.Board;
 import com.kh.mybatis.board.model.vo.Reply;
@@ -19,4 +20,9 @@ public interface BoardService {
 	
 	//댓글 조회
 	ArrayList<Reply> selectReplyList(int boardNo);
+	
+	//게시글 검색
+	int selectSearchCount(HashMap<String,String> map);
+	
+	ArrayList<Board> selectSearchList(PageInfo pi, HashMap<String,String> map);
 }

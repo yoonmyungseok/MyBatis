@@ -52,7 +52,76 @@
         FROM REPLY R
         JOIN MEMBER ON (REPLY_WRITER=USER_NO)
         WHERE R.STATUS='Y'
-        AND REF_BNO=${boardNo}
+        AND REF_BNO=#{boardNo}
         ORDER BY CREATE_DATE DESC
     </select>
+    <!--
+        MyBatis의 동적SQL (동적 쿼리)
+        상황에 따라 분기 처리를 통해 SQL을 동적으로 만드는 것
+        문법은 JSTL의 태그들과 거의 유사한 형태이다.
+    --> 
+    
+    <!--
+        정적바인딩: ${} (자료형에 상관없이 그냥 값이 삽입) =>컬럼명, 테이블명을 넣어줄 때
+        동적바인딩: #{} (자료형에 맞춰서 값이 삽입) =>주로 사용자로부터 입력받은값을 넣어줄 때
+    -->
+    <!--정적바인딩을 이용한 검색기능 구현-->
+    <select id="selectSearchCount" parameterType="hashmap" resultType="_int">
+        SELECT COUNT(*)
+        FROM BOARD B
+        JOIN MEMBER ON (BOARD_WRITER=USER_NO)
+        WHERE B.STATUS='Y'
+        AND ${condition} LIKE '%' || #{keyword} || '%'
+    </select>
+
+    <select id="selectSearchList" parameterType="hashmap" resultMap="boardResultSet">
+        SELECT BOARD_NO, BOARD_TITLE, USER_ID, COUNT, CREATE_DATE
+        FROM BOARD B
+        JOIN MEMBER ON (BOARD_WRITER=USER_NO)
+        WHERE B.STATUS='Y'
+        AND ${condition} LIKE '%' || #{keyword} || '%'
+        ORDER BY CREATE_DATE DESC
+    </select>
+
+    <!--동적 쿼리를 이용한 검색기능 구현-->
+    <!--
+    <select id="selectSearchCount" parameterType="hashmap" resultType="_int">
+        SELECT COUNT(*)
+        FROM BOARD B
+        JOIN MEMBER ON (BOARD_WRITER=USER_NO)
+        WHERE B.STATUS='Y'
+        <if test="condition=='writer'">
+        AND USER_ID
+        </if>
+        <if test="condition=='title'">
+        AND BOARD_TITLE
+        </if>
+        <if test="condition=='content'">
+        AND BOARD_CONTENT
+        </if>
+        LIKE '%' || #{keyword} || '%'
+    </select>
+    -->
+    
+    <!--
+    <select id="selectSearchList" parameterType="hashmap" resultMap="boardResultSet">
+        SELECT BOARD_NO, BOARD_TITLE, USER_ID, COUNT, CREATE_DATE
+        FROM BOARD B
+        JOIN MEMBER ON (BOARD_WRITER=USER_NO)
+        WHERE B.STATUS='Y'
+        <choose>
+            <when test="condition=='writer'">
+            AND USER_ID
+            </when>
+            <when test="condition=='title'">
+            AND BOARD_TITLE
+            </when>
+            <otherwise>
+            AND BOARD_CONTENT
+            </otherwise>
+        </choose>
+        LIKE '%' || #{keyword} || '%'
+        ORDER BY CREATE_DATE DESC
+    </select>
+    -->
 </mapper>

@@ -2,29 +2,68 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>title</title>
-<style>
-    #list-area{
-        border: 1px solid white;
-        text-align: center;
-    }
-    .outer a{
-        color: white;
-        text-decoration: none;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>title</title>
+    <style>
+        #list-area {
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        .outer a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
 </head>
+
 <body>
     <jsp:include page="../common/menubar.jsp" />
     <div class="outer" align="center">
         <br>
         <h1 align="center">게시판</h1>
         <br>
-        <div id="search-area"></div>
+        <!--정적바인딩을 이용한 방식-->
+        <div id="search-area">
+            <form action="search.bo" method="get">
+                <input type="hidden" name="currentPage" value="1">
+                <select name="condition">
+                    <option value="USER_ID">작성자</option>
+                    <option value="BOARD_TITLE">제목</option>
+                    <option value="BOARD_CONTENT">내용</option>
+                </select>
+                <input type="text" name="keyword" value="${keyword}">
+                <button type="submit">검색</button>
+            </form>
+        </div>
+
+        <!--동적 쿼리를 이용한 방식-->
+        <!--
+        <div id="search-area">
+            <form action="search.bo" method="get">
+                <input type="hidden" name="currentPage" value="1">
+                <select name="condition">
+                    <option value="writer">작성자</option>
+                    <option value="title">제목</option>
+                    <option value="content">내용</option>
+                </select>
+                <input type="text" name="keyword" value="${keyword}">
+                <button type="submit">검색</button>
+            </form>
+        </div>
+        -->
+        <c:if test="${not empty condition}">
+            <script>
+                $(function () {
+                    $("#search-area option[value=${condition}]").attr("selected", true);
+                })
+            </script>
+        </c:if>
         <br>
         <table id="list-area">
             <thead>
@@ -39,7 +78,11 @@
             <tbody>
                 <c:choose>
                     <c:when test="${empty list}">
-                        <tr colspan="5">조회된 결과가 없습니다</tr>
+                        <tr>
+                            <td colspan="5">
+                                조회된 결과가 없습니다
+                            </td>
+                        </tr>
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="b" items="${list}">
@@ -56,18 +99,44 @@
             </tbody>
         </table>
         <br>
+
         <div id="paging-area">
             <c:if test="${pi.currentPage ne 1}">
-                <a href="list.bo?currentPage=${pi.currentPage-1}">[이전]</a>
+                <c:choose>
+                    <c:when test="${empty keyword}">
+                        <a href="list.bo?currentPage=${pi.currentPage-1}">[이전]</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a
+                            href="search.bo?currentPage=${pi.currentPage-1}&condition=${condition}&keyword=${keyword}">[이전]</a>
+                    </c:otherwise>
+                </c:choose>
             </c:if>
             <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
-                <a href="list.bo?currentPage=${p}">[${p}]</a>
+                <c:choose>
+                    <c:when test="${empty keyword}">
+                        <a href="list.bo?currentPage=${p}">[${p}]</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="search.bo?currentPage=${p}&condition=${condition}&keyword=${keyword}">[${p}]</a>
+                    </c:otherwise>
+                </c:choose>
             </c:forEach>
             <c:if test="${pi.currentPage ne pi.maxPage}">
-                <a href="list.bo?currentPage=${pi.currentPage+1}">[다음]</a>
+                <c:choose>
+                    <c:when test="${empty keyword}">
+                        <a href="list.bo?currentPage=${pi.currentPage+1}">[다음]</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a
+                            href="search.bo?currentPage=${pi.currentPage+1}&condition=${condition}&keyword=${keyword}">[다음]</a>
+                    </c:otherwise>
+                </c:choose>
+
             </c:if>
         </div>
         <br><br>
     </div>
 </body>
+
 </html>

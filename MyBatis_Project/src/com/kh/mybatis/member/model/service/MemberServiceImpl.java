@@ -3,6 +3,7 @@ package com.kh.mybatis.member.model.service;
 import org.apache.ibatis.session.SqlSession;
 
 import com.kh.mybatis.common.template.Template;
+import com.kh.mybatis.member.model.dao.MemberDao;
 import com.kh.mybatis.member.model.vo.Member;
 
 public class MemberServiceImpl implements MemberService{
